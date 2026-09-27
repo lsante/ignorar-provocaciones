@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F1F4F2">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Mi registro</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌊</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F1F4F2;
+    --surface: #FFFFFF;
+    --ink: #1E2B33;
+    --muted: #5F6F77;
+    --line: #D5DDD9;
+    --si: #2E8B6A;
+    --si-soft: #DDF0E8;
+    --no: #6A5A9C;
+    --no-soft: #E8E4F4;
+    --focus: #2B6CB0;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141B1F;
+      --surface: #1E272C;
+      --ink: #E8EEF0;
+      --muted: #A3B1B7;
+      --line: #33424A;
+      --si: #4FBF95;
+      --si-soft: #1F3A30;
+      --no: #A596DA;
+      --no-soft: #2E2942;
+      --focus: #7FB3F0;
+    }
+  }
+  *, *::before, *::after { box-sizing: inherit; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Lexend", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 17px;
+    line-height: 1.45;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .app { max-width: 480px; margin: 0 auto; padding: 16px 18px 32px; }
+
+  /* Pestañas */
+  .tabs {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
+    background: var(--line); padding: 4px; border-radius: 14px;
+    margin-bottom: 22px;
+  }
+  .tab {
+    font: inherit; font-size: 15px; font-weight: 500;
+    border: 0; border-radius: 10px; padding: 10px;
+    background: transparent; color: var(--muted); cursor: pointer;
+  }
+  .tab[aria-selected="true"] { background: var(--surface); color: var(--ink); }
+
+  .date { font-size: 15px; color: var(--muted); margin: 0 0 6px; }
+  h1 { font-size: 24px; font-weight: 700; line-height: 1.2; margin: 0 0 18px; }
+
+  /* Botones SÍ / NO */
+  .choice { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 26px; }
+  .opt {
+    font: inherit; font-size: 30px; font-weight: 700;
+    min-height: 120px; border-radius: 22px; cursor: pointer;
+    border: 3px solid var(--line); background: var(--surface); color: var(--ink);
+    transition: transform .12s ease, background-color .15s ease, border-color .15s ease;
+  }
+  .opt:active { transform: scale(.97); }
+  .opt.si[aria-pressed="true"] { background: var(--si-soft); border-color: var(--si); color: var(--si); }
+  .opt.no[aria-pressed="true"] { background: var(--no-soft); border-color: var(--no); color: var(--no); }
+
+  label { display: block; font-weight: 500; margin-bottom: 6px; }
+  input[type="text"] {
+    width: 100%; font: inherit; color: var(--ink);
+    background: var(--surface); border: 2px solid var(--line);
+    border-radius: 14px; padding: 13px 14px; margin-bottom: 18px;
+  }
+  input::placeholder { color: var(--muted); opacity: .75; }
+
+  .send {
+    width: 100%; font: inherit; font-size: 18px; font-weight: 700;
+    border: 0; border-radius: 16px; padding: 17px; margin-top: 6px;
+    background: #25A35A; color: #fff; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .send:active { transform: scale(.98); }
+  .send svg { width: 22px; height: 22px; flex: none; }
+
+  .msg { min-height: 22px; font-size: 15px; margin: 10px 0 0; text-align: center; color: var(--muted); }
+  .msg.err { color: #C0392B; }
+  @media (prefers-color-scheme: dark) { .msg.err { color: #F08A7E; } }
+
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+  /* Historial */
+  .day { margin-bottom: 22px; }
+  .day h2 { font-size: 15px; font-weight: 500; color: var(--muted); margin: 0 0 8px; }
+  .entry {
+    background: var(--surface); border-radius: 16px; padding: 14px 14px 12px;
+    margin-bottom: 8px; border-left: 6px solid var(--line);
+  }
+  .entry.si { border-left-color: var(--si); }
+  .entry.no { border-left-color: var(--no); }
+  .entry-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .badge { font-weight: 700; font-size: 15px; }
+  .entry.si .badge { color: var(--si); }
+  .entry.no .badge { color: var(--no); }
+  .entry p { margin: 2px 0; font-size: 15px; }
+  .entry p span { color: var(--muted); }
+  .del {
+    font: inherit; font-size: 13px; color: var(--muted);
+    background: none; border: 0; padding: 4px 6px; cursor: pointer;
+  }
+  .empty { text-align: center; color: var(--muted); padding: 40px 10px; }
+  .empty button {
+    font: inherit; margin-top: 12px; border: 2px solid var(--line); background: var(--surface);
+    color: var(--ink); border-radius: 12px; padding: 10px 18px; cursor: pointer;
+  }
+
+  [hidden] { display: none !important; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<main class="app">
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-reg" aria-selected="true" aria-controls="view-reg">Registro</button>
+    <button class="tab" role="tab" id="tab-hist" aria-selected="false" aria-controls="view-hist">Historial</button>
+  </div>
+
+  <!-- REGISTRO -->
+  <section id="view-reg" role="tabpanel" aria-labelledby="tab-reg">
+    <p class="date" id="today"></p>
+    <h1>¿Pudiste ignorar o desviar una provocación hoy?</h1>
+
+    <div class="choice">
+      <button type="button" class="opt si" data-v="SÍ" aria-pressed="false">SÍ</button>
+      <button type="button" class="opt no" data-v="NO" aria-pressed="false">NO</button>
+    </div>
+
+    <label for="que-paso">¿Qué pasó?</label>
+    <input type="text" id="que-paso" maxlength="120" autocomplete="off" placeholder="Me molestaron en el colegio">
+
+    <label for="que-hice">¿Qué hiciste?</label>
+    <input type="text" id="que-hice" maxlength="120" autocomplete="off" placeholder="No respondí y me fui al baño">
+
+    <button type="button" class="send" id="send">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.2.1-.2 0-.3 0-.4l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>
+      Guardar y enviar a Loreto
+    </button>
+    <p class="msg" id="msg" role="status" aria-live="polite"></p>
+  </section>
+
+  <!-- HISTORIAL -->
+  <section id="view-hist" role="tabpanel" aria-labelledby="tab-hist" hidden>
+    <div id="list"></div>
+  </section>
+
+</main>
+
+<script>
+(function () {
+  const PHONE = "51984797931";
+  const KEY = "registro-provocaciones";
+
+  const $ = (id) => document.getElementById(id);
+  const opts = document.querySelectorAll(".opt");
+  let choice = null;
+
+  // ---- Fecha ----
+  const now = new Date();
+  const fmtLong = (d) => {
+    const s = d.toLocaleDateString("es-PE", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  };
+  const isoDay = (d) => {
+    const z = (n) => String(n).padStart(2, "0");
+    return d.getFullYear() + "-" + z(d.getMonth() + 1) + "-" + z(d.getDate());
+  };
+  $("today").textContent = fmtLong(now);
+
+  // ---- Almacenamiento ----
+  function load() {
+    try { return JSON.parse(localStorage.getItem(KEY)) || []; }
+    catch (e) { return []; }
+  }
+  function save(list) {
+    try { localStorage.setItem(KEY, JSON.stringify(list)); return true; }
+    catch (e) { return false; }
+  }
+
+  // ---- SÍ / NO ----
+  opts.forEach((b) => b.addEventListener("click", () => {
+    choice = b.dataset.v;
+    opts.forEach((o) => o.setAttribute("aria-pressed", o === b ? "true" : "false"));
+    setMsg("");
+  }));
+
+  function setMsg(text, err) {
+    const m = $("msg");
+    m.textContent = text;
+    m.classList.toggle("err", !!err);
+  }
+
+  // ---- Guardar y enviar ----
+  $("send").addEventListener("click", () => {
+    if (!choice) { setMsg("Elige SÍ o NO para continuar.", true); return; }
+
+    const d = new Date();
+    const entry = {
+      id: d.getTime(),
+      day: isoDay(d),
+      fecha: fmtLong(d),
+      hora: d.toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit" }),
+      pudo: choice,
+      paso: $("que-paso").value.trim(),
+      hice: $("que-hice").value.trim()
+    };
+
+    const list = load();
+    list.push(entry);
+    save(list);
+
+    const texto =
+      "📋 *Registro de provocaciones*\n" +
+      "📅 " + entry.fecha + "\n\n" +
+      "¿Pude ignorar o desviar una provocación hoy? *" + entry.pudo + "*\n" +
+      "¿Qué pasó? " + (entry.paso || "-") + "\n" +
+      "¿Qué hice? " + (entry.hice || "-");
+
+    // Limpiar formulario
+    choice = null;
+    opts.forEach((o) => o.setAttribute("aria-pressed", "false"));
+    $("que-paso").value = "";
+    $("que-hice").value = "";
+    setMsg("Guardado ✓");
+    renderHistory();
+
+    window.location.href = "https://wa.me/" + PHONE + "?text=" + encodeURIComponent(texto);
+  });
+
+  // ---- Historial ----
+  function renderHistory() {
+    const list = load().sort((a, b) => b.id - a.id);
+    const box = $("list");
+    box.innerHTML = "";
+
+    if (!list.length) {
+      box.innerHTML = '<div class="empty">Aún no hay registros.<br><button type="button" id="go-reg">Hacer mi primer registro</button></div>';
+      $("go-reg").addEventListener("click", () => show("reg"));
+      return;
+    }
+
+    const groups = {};
+    list.forEach((e) => { (groups[e.day] = groups[e.day] || []).push(e); });
+
+    Object.keys(groups).sort().reverse().forEach((day) => {
+      const sec = document.createElement("div");
+      sec.className = "day";
+      const h = document.createElement("h2");
+      h.textContent = groups[day][0].fecha;
+      sec.appendChild(h);
+
+      groups[day].forEach((e) => {
+        const card = document.createElement("article");
+        card.className = "entry " + (e.pudo === "SÍ" ? "si" : "no");
+
+        const top = document.createElement("div");
+        top.className = "entry-top";
+        const badge = document.createElement("span");
+        badge.className = "badge";
+        badge.textContent = e.pudo + "  ·  " + e.hora;
+        const del = document.createElement("button");
+        del.className = "del";
+        del.type = "button";
+        del.textContent = "Borrar";
+        del.setAttribute("aria-label", "Borrar registro de las " + e.hora);
+        del.addEventListener("click", () => {
+          if (confirm("¿Borrar este registro?")) {
+            save(load().filter((x) => x.id !== e.id));
+            renderHistory();
+          }
+        });
+        top.append(badge, del);
+        card.appendChild(top);
+
+        [["Qué pasó: ", e.paso], ["Qué hice: ", e.hice]].forEach(([k, v]) => {
+          if (!v) return;
+          const p = document.createElement("p");
+          const s = document.createElement("span");
+          s.textContent = k;
+          p.append(s, document.createTextNode(v));
+          card.appendChild(p);
+        });
+
+        sec.appendChild(card);
+      });
+      box.appendChild(sec);
+    });
+  }
+
+  // ---- Pestañas ----
+  function show(which) {
+    const reg = which === "reg";
+    $("tab-reg").setAttribute("aria-selected", reg);
+    $("tab-hist").setAttribute("aria-selected", !reg);
+    $("view-reg").hidden = !reg;
+    $("view-hist").hidden = reg;
+    if (!reg) renderHistory();
+  }
+  $("tab-reg").addEventListener("click", () => show("reg"));
+  $("tab-hist").addEventListener("click", () => show("hist"));
+})();
+</script>
+</body>
+</html>
